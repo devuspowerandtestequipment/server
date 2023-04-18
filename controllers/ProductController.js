@@ -1108,6 +1108,13 @@ const productsearch = async (req,res) => {
   , page = showpage > 0 ? showpage : 0
 
 
+
+  var searchQueryPriceOnly = {
+    "status":'Active',
+    "type": { "$in": [ 'Configurable', 'Simple' ] },
+    "pricemain":{"$gte": req.body.search_price_min,"$lte": req.body.search_price_max},
+  };
+
   var searchQuery = {
     // "name": { $all: [new RegExp('betta','i')] },
 
@@ -1180,9 +1187,8 @@ const productsearch = async (req,res) => {
       query2.exec(async function(err,all_datas){
 
 
-        // var ca1= await Product.aggregate([{ $match: searchQuery },{ $unwind: "$category" },{ $sortByCount: "$category" }]);
-        // var ca2= await Product.aggregate([{ $match: searchQuery },{ $unwind: "$subcategory" },{ $sortByCount: "$subcategory" }]);
-        // var ca3= await Product.aggregate([{ $match: searchQuery },{ $unwind: "$childcategory" },{ $sortByCount: "$childcategory" }]);
+        var query2price_slider_all = Product.find({}).select(['_id','price_heighest','price_lowest']) //remove unnecessary fields here
+        query2price_slider_all.exec(async function(err,all_datasprice_slider_all){
 
         res.json({
           response: true,
@@ -1196,11 +1202,15 @@ const productsearch = async (req,res) => {
             max:all_datas.length>0? _.maxBy(all_datas, function(o) { return o.price_heighest }).price_heighest:0,
             min:all_datas.length>0?_.minBy(all_datas, function(o) { return o.price_lowest }).price_lowest:0,
           },
+          price_slider_all:{
+            max:all_datasprice_slider_all.length>0? _.maxBy(all_datasprice_slider_all, function(o) { return o.price_heighest }).price_heighest:0,
+            min:all_datasprice_slider_all.length>0?_.minBy(all_datasprice_slider_all, function(o) { return o.price_lowest }).price_lowest:0,
+          },
           count_attributes:{
 
             product_brand: await Product.aggregate([{ $match: searchQuery },{ $unwind: "$product_brand" },{ $sortByCount: "$product_brand" }]),
 
-            category: await Product.aggregate([{ $match: searchQuery },{ $unwind: "$category" },{ $sortByCount: "$category" }]),
+            category: await Product.aggregate([{ $match: searchQueryPriceOnly },{ $unwind: "$category" },{ $sortByCount: "$category" }]),
             subcategory: await Product.aggregate([{ $match: searchQuery },{ $unwind: "$subcategory" },{ $sortByCount: "$subcategory" }]),
             childcategory: await Product.aggregate([{ $match: searchQuery },{ $unwind: "$childcategory" },{ $sortByCount: "$childcategory" }]),
             '63651da5838601459cb06b7c': await Product.aggregate([{ $match: searchQuery },{ $unwind: "$63651da5838601459cb06b7c" },{ $sortByCount: "$63651da5838601459cb06b7c" }]), //size
@@ -1217,7 +1227,7 @@ const productsearch = async (req,res) => {
           },
           main_attributes:{ //---normal attribute
             product_brand: _.compact(await query2.distinct("product_brand")),
-            category: _.compact(await query2.distinct("category")),
+            category: _.compact(await Product.distinct("category")),
             subcategory: _.compact(await query2.distinct("subcategory")),
             childcategory: _.compact(await query2.distinct("childcategory")),
           },
@@ -1239,6 +1249,7 @@ const productsearch = async (req,res) => {
 
           }
         })
+      })
       })
   })
 }
