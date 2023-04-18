@@ -15,5 +15,9 @@ router.get('/testpdf',WebStaticDataController.testpdf);
 router.get('/homepage',WebStaticDataController.homepage)
 
 
+router.get('/todaysdealspage',WebStaticDataController.todaysdealspage);
+router.get('/trendingpage',WebStaticDataController.trendingpage);
+router.get('/newarrivalpage',WebStaticDataController.newarrivalpage);
+
 
 module.exports=router;

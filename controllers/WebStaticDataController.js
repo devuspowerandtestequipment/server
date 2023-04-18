@@ -300,6 +300,45 @@ const testpdf = (req,res) => {
     });
 }
 
+
+const todaysdealspage = (req,res) => {
+  Product
+  .find({status:'Active',type:['Configurable','Simple'],product_collection:'Todays Deals'})
+  .select({ _id: 1, name: 1, stock: 1, category: 1, url: 1, type:1, price_lowest: 1, price_heighest: 1, pricemain: 1, review_heighest_star:1, review_total:1,product_labels:1,product_collection:1, images: { $slice: 1 }})
+  .then(datas=>{
+    res.json({
+      response:false,
+      datas
+    })
+  })
+}
+
+const trendingpage = (req,res) => {
+  Product
+  .find({status:'Active',type:['Configurable','Simple'],product_collection:'Trending'})
+  .select({ _id: 1, name: 1, stock: 1, category: 1, url: 1, type:1, price_lowest: 1, price_heighest: 1, pricemain: 1, review_heighest_star:1, review_total:1,product_labels:1,product_collection:1, images: { $slice: 1 }})
+  .then(datas=>{
+    res.json({
+      response:false,
+      datas
+    })
+  })
+}
+
+
+const newarrivalpage = (req,res) => {
+  Product
+  .find({status:'Active',type:['Configurable','Simple'],product_collection:'New Arrivals'})
+  .select({ _id: 1, name: 1, stock: 1, category: 1, url: 1, type:1, price_lowest: 1, price_heighest: 1, pricemain: 1, review_heighest_star:1, review_total:1,product_labels:1,product_collection:1, images: { $slice: 1 }})
+  .then(datas=>{
+    res.json({
+      response:false,
+      datas
+    })
+  })
+}
+
+
 module.exports = {
-  navitems,flushCache,viewproduct,testpdf,homepage
+  navitems,flushCache,viewproduct,testpdf,homepage,todaysdealspage,trendingpage,newarrivalpage
 };
