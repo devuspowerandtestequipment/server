@@ -15,14 +15,24 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
       const Email = require('email-templates');
 
       // locals.year='2023';
-      locals.website_url='https://www.reactnodeecommerce.cloud';
-      locals.mainfooter='www.reactnodeecommerce.cloud | 2023';
-      locals.mainfooter_link='https://www.reactnodeecommerce.cloud';
-      locals.footer_address1='Company Inc, 3 Abbey Road, San Francisco CA 94102';
+      // locals.website_url='https://www.reactnodeecommerce.cloud';
+      // locals.mainfooter='www.reactnodeecommerce.cloud | 2023';
+      // locals.mainfooter_link='https://www.reactnodeecommerce.cloud';
+      // locals.footer_address1='Company Inc, 3 Abbey Road, San Francisco CA 94102';
+      // locals.footer_address2='2023';
+      // locals.footer_unsubscribe=`Don't like these emails`;
+      // locals.helpemail='info@reactnodeecommerce.cloud';
+      // locals.websitename='ReactNodeEcomemrce';
+
+
+      locals.website_url='https://www.uspowerandtestequipment.com';
+      locals.mainfooter='uspowerandtestequipment.com | 2023';
+      locals.mainfooter_link='https://www.uspowerandtestequipment.com';
+      locals.footer_address1='Oceanside, CA 92057, USA';
       locals.footer_address2='2023';
       locals.footer_unsubscribe=`Don't like these emails`;
-      locals.helpemail='info@reactnodeecommerce.cloud';
-      locals.websitename='ReactNodeEcomemrce';
+      locals.helpemail='sales@uspowerandtestequipment.com';
+      locals.websitename='USPowerAndTestequipment';
 
 
 

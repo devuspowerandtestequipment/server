@@ -121,7 +121,7 @@ const payondelivery = (req,res) => {
 
           const idgen = orderid.generate();
           var tmp_data=req.body;
-          tmp_data.order_id=`RNEC${orderid.getTime(idgen)}`
+          tmp_data.order_id=`UPTE${orderid.getTime(idgen)}`
 
           Order.create(tmp_data)
           .then(response=>{
