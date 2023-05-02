@@ -31,11 +31,20 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
 
       const transporter = nodemailer.createTransport({
         // service: process.env.EMAIL_SERVICE,
-        host: process.env.EMAIL_HOST,
+        // host: process.env.EMAIL_HOST,
+
+        host: 'smtp.office365.com', // Office 365 server
+        port: 587,     // secure SMTP
+        secure: false, // false for TLS - as a boolean not string - but the default is false so just remove this completely
+
+
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
-          }
+        },
+        tls: {
+            ciphers: 'SSLv3'
+        }
         });
         const email = new Email({
         transport: transporter,
@@ -51,7 +60,7 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
             },
             locals: locals
         }).then(response=>{
-          // console.log(response);
+          console.log('response',response);
 
           var email_data={
             email_to:email_to,
