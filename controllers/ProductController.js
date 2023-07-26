@@ -1083,7 +1083,7 @@ const productsearchfinal = async (req,res) => {
 const productsearch = async (req,res) => {
 
 
-  // console.log(req.body.search_price_min);
+  console.log(req.body);
   // console.log(req.body.search_price_max);
 
 
@@ -1139,7 +1139,7 @@ const productsearch = async (req,res) => {
   // "name": ,
 
   // SEARCH BY PRODUCT NAME
-  console.log(req.body.search_product_name)
+  // console.log(req.body.search_product_name)
   if(!req.body.search_product_name){
     var search_key = '';
   }else{
@@ -1209,6 +1209,7 @@ const productsearch = async (req,res) => {
           count_attributes:{
 
             product_brand: await Product.aggregate([{ $match: searchQuery },{ $unwind: "$product_brand" },{ $sortByCount: "$product_brand" }]),
+            // category: await Product.aggregate([{ $unwind: "$category" },{ $sortByCount: "$category" }]),
 
             category: await Product.aggregate([{ $match: searchQueryPriceOnly },{ $unwind: "$category" },{ $sortByCount: "$category" }]),
             subcategory: await Product.aggregate([{ $match: searchQuery },{ $unwind: "$subcategory" },{ $sortByCount: "$subcategory" }]),
