@@ -15,7 +15,6 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
       const Email = require('email-templates');
 
 
-      // locals.year='2023';
       locals.website_url='https://www.uspowerandtestequipment.com';
       locals.mainfooter='uspowerandtestequipment.com | 2023';
       locals.mainfooter_link='https://www.uspowerandtestequipment.com';
@@ -24,9 +23,6 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
       locals.footer_unsubscribe=`Don't like these emails`;
       locals.helpemail='sales@uspowerandtestequipment.com';
       locals.websitename='USPowerAndTestequipment';
-
-
-
 
 
       const transporter = nodemailer.createTransport({
@@ -52,6 +48,21 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
         preview: false,
       });
 
+
+      // const transporter = nodemailer.createTransport({
+      //   // service: process.env.EMAIL_SERVICE,
+      //   host: process.env.EMAIL_HOST,
+      //   auth: {
+      //     user: process.env.EMAIL_USER,
+      //     pass: process.env.EMAIL_PASS
+      //     }
+      //   });
+      //   const email = new Email({
+      //   transport: transporter,
+      //   send: true,
+      //   preview: false,
+      // });
+
        email.send({
             template: email_templete,
             message: {
@@ -60,7 +71,7 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
             },
             locals: locals
         }).then(response=>{
-          console.log('response',response);
+          // console.log(response);
 
           var email_data={
             email_to:email_to,

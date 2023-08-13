@@ -1,4 +1,7 @@
 
+
+
+
 /* FIX FOR ALL */
 .ant-tabs-tab {
     padding: 12px 14px !important;
@@ -158,4 +161,9 @@ border-radius: 7px !important;
 }
 .ant-drawer-title {
     color: white !important;
+}
+
+.btnsui{
+  border-radius: 7px !important;
+  height: 47px !important;
 }

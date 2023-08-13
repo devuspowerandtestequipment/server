@@ -1080,10 +1080,11 @@ const productsearchfinal = async (req,res) => {
 
 
 
+
 const productsearch = async (req,res) => {
 
 
-  console.log(req.body);
+  // console.log(req.body);
   // console.log(req.body.search_price_max);
 
 
@@ -1254,6 +1255,10 @@ const productsearch = async (req,res) => {
       })
   })
 }
+
+
+
+
 
 
 const showallproductspagination = (req,res) => {

@@ -364,7 +364,7 @@ b{
       <div class="invoice-main">
           <div style="margin-bottom:2rem">
             <div class="col-md-6 mb-30m">
-              <img src="https://i.ibb.co/4RGDdZ5/logo.png" width="180px" alt="ss" >
+              <img src="https://api.reactnodeecommerce.cloud/public/logo.png" width="180px" alt="ss" >
             </div>
             <div class="col-md-6 mb-30m text_invoice">
               <h1>Invoice
@@ -413,7 +413,7 @@ b{
             </address>
 
           </div>
-          <div class="invoice-right col-md-6"><b>Pay To:</b><address>USPowerAndTestequipment<br>Oceanside, CA 92057, USA,<br>(+1) 760-473-1732<br>sales@uspowerandtestequipment.com</address></div>
+          <div class="invoice-right col-md-6"><b>Pay To:</b><address>Invce Inc<br>4510 E 96th St, Indianapolis,<br>IN 46240, United States<br>info@invce.com</address></div>
       </div>
 
     <br />
@@ -442,10 +442,12 @@ b{
     </div>
     <br />
     <br />
-    <div class="col-md-9 invoice-left">
-    <b>Payment Info:</b> {{invoicedata.payment_status}} | {{invoicedata.payment_type}}
+    <div class="col-md-8 invoice-left">
+    <b>Payment Info:</b> {{invoicedata.payment_status}}
+    <br />
+    ({{invoicedata.payment_type}})
     </div>
-    <div class="col-md-3 invoice-right">
+    <div class="col-md-4 invoice-right">
     <table class="total-table" style="width: 188px;float: right;">
       <tbody>
         <tr>
@@ -457,12 +459,28 @@ b{
           <td>{{invoicedata.taxes}}</td>
         </tr>
         <tr>
+          <th>Discounts:</th>
+          <td>{{invoicedata.amount_discount}}</td>
+        </tr>
+        <tr>
           <th>Shipping:</th>
-          <td>{{invoicedata.shipping}}</td>
+          <td>{{invoicedata.amount_shipping}}</td>
+        </tr>
+        <tr>
+          <th>Shipping Method:</th>
+          <td>{{invoicedata.amount_shipping_method}}</td>
+        </tr>
+        <tr>
+          <th></th>
+          <td>{{invoicedata.amount_shipping_method_name}}</td>
         </tr>
         <tr>
           <th>Coupon:</th>
-          <td>{{invoicedata.coupon}} - {{invoicedata.coupon_value}}</td>
+          <td>{{invoicedata.coupon}}</td>
+        </tr>
+        <tr>
+          <th></th>
+          <td>{{invoicedata.coupon_value}}</td>
         </tr>
 
         <tr style="font-size:14px">
@@ -472,8 +490,8 @@ b{
       </tbody>
     </table>
       <div style="margin-top:3rem">
-        <!-- <img src='https://www.freepnglogos.com/uploads/signature-png/nguy-ecnh-nguyen-van-binh-signature-png-5.png' width='150px' style="float:right" /> -->
-        <h6 class="auth_sign">Keith Hersch, President</h6>
+        <img src='https://www.freepnglogos.com/uploads/signature-png/nguy-ecnh-nguyen-van-binh-signature-png-5.png' width='150px' style="float:right" />
+        <h6 class="auth_sign">Authorized Signature</h6>
       </div>
     </div>
 

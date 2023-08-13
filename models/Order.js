@@ -17,6 +17,9 @@ const orderSchema = new Schema({
   deviceinfo:{
     type:Object
   },
+  currency_info:{
+    type:Object
+  },
   order_id:{
     type:String
   },
@@ -58,6 +61,22 @@ const orderSchema = new Schema({
   shipping_method:{
     type:Object
   },
+
+
+  amount_shippingrule:{
+    type:Number
+  },
+  shippingrule:{
+    type:Object
+  },
+  amount_discount:{
+    type:Number
+  },
+  discounts:{
+    type:Object
+  },
+
+
   coupon:{
     type:Object
   },

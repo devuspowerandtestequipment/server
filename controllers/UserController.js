@@ -7,9 +7,16 @@ var _ = require('lodash');
 const imageToBase64 = require('image-to-base64');
 var calculateTax = require("./calculateTax");
 var notificationList = require("./notificationList");
+var jsonDecrypt = require("./jsonDecrypt");
+var jsonEncrypt = require("./jsonEncrypt");
+
+
 const { uuid } = require('uuidv4');
 var mongoose = require('mongoose');
 const axios = require('axios');
+var CryptoJS = require("crypto-js");
+
+
 
 const User = require("../models/User");
 const UserAddress = require("../models/UserAddress");
@@ -35,6 +42,19 @@ var imagekit = new ImageKit({
   privateKey: process.env.IMAGEKIT_PRIVATEKEY,
   urlEndpoint: process.env.IMAGEKIT_URLENDPOINTKEY,
 });
+
+
+
+
+const create_demo_admin = (req,res) => {
+  User.create({name:'Admin',email:'sam@gmail.com',password:'$2a$10$PfE9cSzkiDK3aDFHzeUbNeogTkRbx6FZ4Dm220kc7YkkY5bdkCZgW',type:'Admin'})
+  .then(response=>{
+    res.json({
+      response:true
+    })
+  })
+}
+
 
 
 // INDEX
@@ -239,6 +259,9 @@ const admin_view_all_emails = (req,res) => {
 
 
 const login_with_google = (req,res) => {
+
+  req.body=jsonDecrypt.decrypt(req.body.rnecomtext);
+
   User.findOne({email:req.body.email},(err,doc)=>{
     if(doc===null){
 
@@ -278,7 +301,9 @@ const login_with_google = (req,res) => {
                 .then(resa=>{
                   res.json({
                     response:true,
-                    data:rdata
+                    data:jsonEncrypt.encrypt(rdata),
+
+                    // data:rdata
                   })
                 })
 
@@ -353,7 +378,7 @@ const login_with_google = (req,res) => {
 
         res.json({
           response:true,
-          data:response
+          data:jsonEncrypt.encrypt(response),
         })
 
         LoginRecord.create({user_id:response._id,ipinfo:req.body.ipinfo,deviceinfo:req.body.deviceinfo})
@@ -384,9 +409,9 @@ const login_with_google = (req,res) => {
 //REGISTER
 const register = (req,res) => {
 
+  req.body=jsonDecrypt.decrypt(req.body.rnecomtext);
 
   var hash = bcrypt.hashSync(req.body.password, salt);
-
   var bodydata=req.body;
   bodydata.password=hash;
   bodydata.created_by='user';
@@ -405,7 +430,7 @@ const register = (req,res) => {
         .then(resa=>{
           res.json({
             response:true,
-            data:response,
+            data:jsonEncrypt.encrypt(response),
             message:'user_created'
           })
         })
@@ -485,11 +510,6 @@ const register_fromadmin = (req,res) => {
           data:response,
           message:'user_created'
         })
-
-
-
-
-
       })
     }else{
       res.json({
@@ -598,11 +618,24 @@ const addaddressfromcart = (req,res) => {
 
 
 
+const fetch_auth_user_admin = (req,res) => {
+  User.findOne({_id:req.params.id}).populate('admin_role')
+  .then(doc=>{
+    res.json({
+      response:true,
+      data:doc,
+    })
+  })
+}
+
+
 //LOGIN ADMIN
 const loginadmin = (req,res) => {
   var bodydata=req.body;
 
-  User.findOne({email:bodydata.email},(err,doc)=>{
+
+  User.findOne({email:bodydata.email}).populate('admin_role')
+  .then(doc=>{
     if(doc===null){
       res.json({
         response:false,
@@ -665,6 +698,11 @@ const loginadmin = (req,res) => {
     }
   })
 
+
+  // User.findOne({email:bodydata.email},(err,doc)=>{
+  //
+  // })
+
 }
 
 
@@ -672,6 +710,8 @@ const loginadmin = (req,res) => {
 
 //LOGIN
 const login = (req,res) => {
+
+  req.body=jsonDecrypt.decrypt(req.body.rnecomtext);
   var bodydata=req.body;
 
   User.findOne({email:bodydata.email},(err,doc)=>{
@@ -687,7 +727,9 @@ const login = (req,res) => {
 
           res.json({
             response:true,
-            data:_.omit(doc, ['password']),
+            // data:_.omit(doc, ['password']),
+            data:jsonEncrypt.encrypt(_.omit(doc, ['password'])),
+
             message:'Login Success'
           })
 
@@ -701,7 +743,6 @@ const login = (req,res) => {
           emailsender.emailsendFunction('user_send_new_login_detected',doc.email,{secureuserid:doc._id+'9e6cfeexf5d8ccecgt6e6cce7dvc2de8dcece7',username:doc.name.split(' ')[0],ipinfo:req.body.ipinfo,deviceinfo:req.body.deviceinfo},'email_user_newlogin_detected',true,doc._id)
           .then(response=>{
             console.log('send user_send_new_login_detected');
-            console.log(response)
           })
 
 
@@ -738,7 +779,8 @@ const emailverification = (req,res) => {
             res.json({
               response:true,
               message:'Success',
-              data:doc2
+              data:jsonEncrypt.encrypt(doc2)
+              // data:doc2
             })
           })
         })
@@ -850,7 +892,6 @@ const getusershippingmethodselected = (req,res) => {
 
 //SAVE USER SHIPPING METHOD (shipping amount)
 const saveusershippingmethodselected = (req,res) => {
-
   UserShippingMethod.deleteMany({user_id:req.body.user_id},{multi:true})
   .then(respo=>{
     UserShippingMethod.create(req.body)
@@ -861,19 +902,15 @@ const saveusershippingmethodselected = (req,res) => {
       })
     })
   })
+}
 
-  // UserShippingMethod.findOne({user_id:req.params.user_id},(err,doc)=>{
-  //   if(doc===null){
-  //     res.json({
-  //       response:false
-  //     })
-  //   }else{
-  //     res.json({
-  //       response:true,
-  //       data:doc
-  //     })
-  //   }
-  // })
+const clearusershippingmethodselected = (req,res) => {
+  UserShippingMethod.deleteMany({user_id:req.params.user_id},{multi:true})
+  .then(respo=>{
+    res.json({
+      response:true
+    })
+  })
 }
 
 
@@ -904,9 +941,6 @@ const updateshppingadditionalcomments = (req,res) => {
 
 
 const admin_account_information_update = (req,res) => {
-
-  console.log(req.body)
-
   User.findByIdAndUpdate(req.body._id,req.body)
   .then(response=>{
     User.findById(req.body._id).select('-password')
@@ -958,6 +992,9 @@ const update = (req,res) => {
 
   console.log('req.body.ipinfo',req.body.ipinfo)
 
+  req.body=jsonDecrypt.decrypt(req.body.rnecomtext);
+
+
   User.findByIdAndUpdate(req.params.id,req.body)
   .then(response=>{
 
@@ -965,7 +1002,7 @@ const update = (req,res) => {
     .then(rdata=>{
       res.json({
         response:true,
-        data:rdata
+        data:jsonEncrypt.encrypt(rdata),
       })
 
       if(req.body.ipinfo && req.body.deviceinfo){
@@ -989,9 +1026,23 @@ const update = (req,res) => {
 
 
 
+
+const updateaccountinfobyadmin = (req,res) => {
+
+  User.findByIdAndUpdate(req.params.id,req.body)
+  .then(response=>{
+    res.json({
+      response:true
+    })
+  })
+
+}
+
+
+
 const update_password = (req,res) => {
 
-
+  req.body=jsonDecrypt.decrypt(req.body.rnecomtext);
 
   User.findOne({_id:req.body.id},(err,doc)=>{
     if(doc===null){
@@ -1175,7 +1226,10 @@ const update_password_web = (req,res) => {
 }
 
 const admin_view_user_details = (req,res) => {
-  User.findById(req.params.id,(err,doc)=>{
+
+  User.findOne({_id:req.params.id}).populate('admin_role','name')
+  .then(doc=>{
+
     if(doc===null){
       res.json({
         response:false,
@@ -1195,9 +1249,34 @@ const admin_view_user_details = (req,res) => {
           })
         })
       }
-
     }
+
   })
+
+
+  // User.findById(req.params.id,(err,doc)=>{
+  //   if(doc===null){
+  //     res.json({
+  //       response:false,
+  //     })
+  //   }else{
+  //     if(doc.isAdminSeen){
+  //       res.json({
+  //         response:true,
+  //         data:doc
+  //       })
+  //     }else{
+  //       User.findByIdAndUpdate(req.params.id,{$set:{isAdminSeen:true}})
+  //       .then(d=>{
+  //         res.json({
+  //           response:true,
+  //           data:doc
+  //         })
+  //       })
+  //     }
+  //
+  //   }
+  // })
 }
 
 const admin_delete_user_details = (req,res) => {
@@ -1379,7 +1458,20 @@ const admin_delete_emailrecord = (req,res) => {
 
 const user_page_visit_tracking_store = (req,res) => {
 
+  // console.log(req.body);
+  //
+
+  // var bytes = CryptoJS.AES.decrypt(req.body.rnecomtext, process.env.DB_JSON_ENC_KEY);
+  // var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  // req.body=decryptedData;
+
+  // console.log('req.body',req.body);
+
+  req.body=jsonDecrypt.decrypt(req.body.rnecomtext);
+
+
   // console.log(req.body)
+
 
   if(req.body.user){
 
@@ -1390,24 +1482,29 @@ const user_page_visit_tracking_store = (req,res) => {
       if(response.status && response.instant_logout_from_all_device===false){
         res.json({
           response:true,
-          data:response
+          data:jsonEncrypt.encrypt(response)
+          // data:CryptoJS.AES.encrypt(JSON.stringify(response), process.env.DB_JSON_ENC_KEY).toString()
+          // data:response
         })
       }else if (response.status===false) {
         res.json({
           response:false,
-          data:response,
+          // data:response,
+          data:jsonEncrypt.encrypt(response),
           message:'user_account_blocked'
         })
       }else if (response.instant_logout_from_all_device) {
         res.json({
           response:false,
-          data:response,
+          data:jsonEncrypt.encrypt(response),
+          // data:response,
           message:'logout_now'
         })
       }else{
         res.json({
           response:false,
-          data:response,
+          // data:response,
+          data:jsonEncrypt.encrypt(response),
           message:'logout_now'
         })
       }
@@ -1695,5 +1792,6 @@ const admin_user_all_productvisit_list_clear = (req,res) => {
 }
 
 module.exports = {
-  index,admin_user_all_productvisit_list_clear,admin_delete_user_productvisit_list,admin_user_all_productvisit_list,user_productvisit_list,user_productvisit_store,admin_theme_update,admin_account_information_update,send_email_verification_code,admin_clearall_notifications,admin_readall_notifications,admin_delete_notification,admin_delete_items_from_cart,admin_all_cart_items,admin_clearall_loginrecords,admin_clearall_pagevisit_records,admin_all_pagevisit_records,admin_delete_emailrecord,admin_all_notifications,admin_view_all_emailrecords,admin_view_emailrecord,admin_view_all_loginrecords,admin_view_all_emails,admin_view_user_details,admin_view_user_login_details,admin_delete_user_details,forgotpassword,register_fromadmin,update_password_web,check_reset_password_code,login_with_google,register,login_with_google,update_profile_picture,update_password,update,login,emailverification,admin_setseen_notifications,loginadmin,registerfromcart,getusershippingaddress,addaddressfromcart,deleteaddress,updateuseraddress,user_page_visit_tracking_store,updatedefauladdress,getusershippingmethodselected,saveusershippingmethodselected,getuserdefaultshippingaddress,getcartinfo,admin_mostviewed_page,updateshppingadditionalcomments,mark_all_seen_cart,admin_setseen_notifications_byuserid,mark_all_seen,admin_setseen_notifications_bymessage_of_user,admin_setseen_notifications_bymessage,admin_setseen_notifications_byurl,admin_view_user_cart_details,admin_view_user_order_details,admin_view_user_dashboard_details,admin_view_user_payment_history,logout_from_alldevice,login_as_user_step1,login_as_user_step2,admin_delete_loginrecord
+  create_demo_admin,
+  index,fetch_auth_user_admin,admin_user_all_productvisit_list_clear,admin_delete_user_productvisit_list,admin_user_all_productvisit_list,user_productvisit_list,user_productvisit_store,admin_theme_update,admin_account_information_update,send_email_verification_code,admin_clearall_notifications,admin_readall_notifications,admin_delete_notification,admin_delete_items_from_cart,admin_all_cart_items,admin_clearall_loginrecords,admin_clearall_pagevisit_records,admin_all_pagevisit_records,admin_delete_emailrecord,admin_all_notifications,admin_view_all_emailrecords,admin_view_emailrecord,admin_view_all_loginrecords,admin_view_all_emails,admin_view_user_details,admin_view_user_login_details,admin_delete_user_details,forgotpassword,register_fromadmin,update_password_web,check_reset_password_code,login_with_google,register,login_with_google,update_profile_picture,update_password,update,login,emailverification,admin_setseen_notifications,loginadmin,registerfromcart,getusershippingaddress,addaddressfromcart,deleteaddress,updateuseraddress,user_page_visit_tracking_store,updatedefauladdress,getusershippingmethodselected,saveusershippingmethodselected,getuserdefaultshippingaddress,getcartinfo,admin_mostviewed_page,updateshppingadditionalcomments,mark_all_seen_cart,admin_setseen_notifications_byuserid,mark_all_seen,admin_setseen_notifications_bymessage_of_user,admin_setseen_notifications_bymessage,admin_setseen_notifications_byurl,admin_view_user_cart_details,admin_view_user_order_details,admin_view_user_dashboard_details,admin_view_user_payment_history,logout_from_alldevice,login_as_user_step1,login_as_user_step2,admin_delete_loginrecord,updateaccountinfobyadmin,clearusershippingmethodselected
 };

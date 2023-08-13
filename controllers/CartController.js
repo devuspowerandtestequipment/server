@@ -1,6 +1,8 @@
 const response = require("express");
 
 var notificationList = require("./notificationList");
+var jsonDecrypt = require("./jsonDecrypt");
+var jsonEncrypt = require("./jsonEncrypt");
 
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
@@ -12,14 +14,6 @@ const addcheckcart = (req,res) => {
   })
 }
 
-const index = (req,res) => {
-  Cart.find({})
-  .then(response=>{
-    res.json({
-      response:true
-    })
-  })
-}
 
 //<<<=== get cart items ===>>>
 const getcartitems = (req,res) => {
@@ -33,7 +27,7 @@ const getcartitems = (req,res) => {
               .populate({
                 path: 'parent_product_id',
                 // select: 'url product_tax images',
-                select: { _id: 1, url: 1, product_tax: 1,showImagesInConfigProducts:1, images: { $slice: 1 } },
+                select: { _id: 1, url: 1, product_tax: 1,showImagesInConfigProducts:1, images: { $slice: 1 }, category:1, subcategory:1, childcategory:1 },
                 populate: [
                 {
                   path: 'product_tax',
@@ -45,7 +39,9 @@ const getcartitems = (req,res) => {
               .then((response) => {
                 res.json({
                   response: true,
-                  datas: response,
+                  datas:jsonEncrypt.encrypt(response),
+
+                  // datas: response,
                 });
               });
       }else{
@@ -94,7 +90,7 @@ const getcartitems = (req,res) => {
                 .populate({
                   path: 'parent_product_id',
                   // select: 'url product_tax images',
-                  select: { _id: 1, url: 1, product_tax: 1,showImagesInConfigProducts:1, images: { $slice: 1 } },
+                  select: { _id: 1, url: 1, product_tax: 1,showImagesInConfigProducts:1, images: { $slice: 1 }, category:1, subcategory:1, childcategory:1 },
                   populate: [
                   {
                     path: 'product_tax',
@@ -106,7 +102,8 @@ const getcartitems = (req,res) => {
                 .then((response) => {
                   res.json({
                     response: true,
-                    datas: response,
+                    datas:jsonEncrypt.encrypt(response),
+
                   });
                 });
             // }
@@ -135,7 +132,7 @@ const getcartitemsnologin = (req,res) => {
     .populate({
       path: 'parent_product_id',
       // select: 'url product_tax images',
-      select: { _id: 1, url: 1, product_tax: 1,showImagesInConfigProducts:1, images: { $slice: 1 } },
+      select: { _id: 1, url: 1, product_tax: 1,showImagesInConfigProducts:1, images: { $slice: 1 }, category:1, subcategory:1, childcategory:1 },
       populate: [
       {
         path: 'product_tax',
@@ -147,7 +144,8 @@ const getcartitemsnologin = (req,res) => {
     .then((response) => {
       res.json({
         response: true,
-        datas: response,
+        datas:jsonEncrypt.encrypt(response),
+
       });
     });
 }
@@ -365,5 +363,5 @@ const admin_setseen_all_userscart = (req,res) => {
 }
 
 module.exports = {
-  store,index,addcheckcart,gencartitemlocal,getcartitems,getcartitemsnologin,remove,addtocart2,admin_setseen_cart,admin_setseen_all_userscart
+  store,addcheckcart,gencartitemlocal,getcartitems,getcartitemsnologin,remove,addtocart2,admin_setseen_cart,admin_setseen_all_userscart
 };
