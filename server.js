@@ -189,7 +189,6 @@ app.get("/paypalsuccess", function (req, res) {
 
 
 
-
 ///////////////////////////////
 const { Resolver } = require("dns").promises;
 
@@ -297,6 +296,102 @@ app.get("/", async (req, res) => {
 
 
 
+
+app.get("/test1", async (req, res) => {
+  // https://github.com/mrvautin/expressCart/blob/master/config/payment/config/authorizenet.json
+  var authorizenetConfig ={
+        "description": "Card payment",
+        "loginId": "2s4VR56fb3Q",
+        "transactionKey": "7RXJ5698f9LERnjx",
+        "clientKey": "clientKey",
+        "mode": "test" //live
+  }
+
+  let authorizeUrl = 'https://api.authorize.net/xml/v1/request.api';
+  // if(authorizenetConfig.mode === 'test'){
+  //       authorizeUrl = 'https://apitest.authorize.net/xml/v1/request.api';
+  // }
+
+  const chargeJson = {
+        createTransactionRequest: {
+            merchantAuthentication: {
+                name: authorizenetConfig.loginId,
+                transactionKey: authorizenetConfig.transactionKey
+            },
+            transactionRequest: {
+                transactionType: 'authCaptureTransaction',
+                amount: 11,
+                payment: {
+                    opaqueData: {
+                        dataDescriptor: 'Payment',
+                        dataValue: 11
+                    }
+                }
+            }
+        }
+    };
+
+
+
+
+    const axios = require('axios');
+    axios.post(authorizeUrl, chargeJson, { responseType: 'text' })
+    .then(async(response) => {
+
+        console.log(response);
+
+        // This is crazy but the Authorize.net API returns a string with BOM and totally
+        // screws the JSON response being parsed. So many hours wasted!
+        // const txn = JSON.parse(stripBom(response.data)).transactionResponse;
+        //
+        // if(!txn){
+        //     console.log('Declined request payload', chargeJson);
+        //     console.log('Declined response payload', response.data);
+        //     res.status(400).json({ err: 'Your payment has declined. Please try again' });
+        //     return;
+        // }
+
+        // order status if approved
+        // let orderStatus = 'Paid';
+        // let approved = true;
+        // let paymentMessage = 'Your payment was successfully completed';
+        // if(txn && txn.responseCode !== '1'){
+        //     console.log('Declined response payload', response.data);
+        //     paymentMessage = 'Your payment was declined';
+        //     orderStatus = 'Declined';
+        //     approved = false;
+        // }
+
+
+
+
+    })
+    .catch((err) => {
+        console.log('Error sending payment to API', err);
+        res.status(400).json({ err: 'Your payment has declined. Please try again' });
+    });
+
+
+
+
+
+
+
+
+
+
+  // res.json({
+  //   response:true
+  // })
+
+
+});
+
+
+
+
+
+
 app.get("/sendemail", (req, res) => {
   const nodemailer = require('nodemailer');
   const Email = require('email-templates');
@@ -343,340 +438,6 @@ app.get("/sendemail", (req, res) => {
 
 
 
-
-
-app.get("/api/test", (req, res) => {
-
-  // https://stackoverflow.com/questions/26820810/mongoose-dynamic-query
-  // const Attribute = require("./models/Attribute");
-  // https://mongoosejs.com/docs/api/query.html
-  // https://stackoverflow.com/questions/52867011/mongoose-check-for-a-value-between-two-numbers
-
-
-  // var query = Attribute.find();
-  // query.where('name').equals('Size');
-  // query.where('dropdowndata').equals(['SS']);
-  // // query.where('id').equals('223');
-  // // query.where('something').equals('high');
-  // query.exec(function(err,doc){
-  //   console.log(doc)
-  //   res.json({
-  //     response: "Mahaprasad",
-  //     data:doc
-  //   });
-  // });
-  //
-  //
-  //
-  // var query = Attribute.find().select({'updatedAt':0});;
-  //
-  // var filters = [
-  //     {fieldName: "name", value: ['Size', 'Color']},
-  //     {fieldName: "dropdowndata", value: ['S']}
-  // ];
-  //
-  // for (var i = 0; i < filters.length; i++) {
-  //     query.where(filters[i].fieldName).equals(filters[i].value)
-  // }
-  //
-  // query.exec(function(err,doc){
-  //   console.log(doc)
-  //   res.json({
-  //     response: "Mahaprasad",
-  //     data:doc
-  //   });
-  // });
-
-
-  // var filters = {
-  //     name:['Size', 'Color'],
-  //     // dropdowndata:['S']
-  // };
-  //
-  // filters.dropdowndata=['SS']
-  //
-  // Attribute.find(filters)
-  // .then(doc=>{
-  //     res.json({
-  //       response: "Mahaprasad",
-  //       data:doc
-  //     });
-  // })
-});
-
-
-
-app.get("/api/test-elementmatch_old", (req, res) => {
-
-  var ProductData = require("./models/Product");
-
-  // ProductData.add({ color: 'Object', colorsa: 'string', pricesas: 'number' });
-
-
-  // ***********************
-  // ProductData.find({configproducts:{$elemMatch:{configname:'Black-XS-A',as:''}}})
-  // .then(response=>{
-  //   res.json({
-  //     response:true,
-  //     data:response
-  //   })
-  // })
-  // ***********************
-
-  var query = ProductData.find().select({'updatedAt':0});;
-
-  var filters = [
-      // {fieldName: "name", value: ['Size', 'Color']},
-      {fieldName: "Closure", value: ['Zip']}
-
-      // {fieldName: "myattributes.Group", value: ['s','K']},
-      // {fieldName: "myattributes.Group", value: ['s','K']},
-
-      // {fieldName: "myattributes.size", value: ['S']},
-      // {fieldName: "myattributes.test", value: ['3']},
-
-
-  ];
-
-  for (var i = 0; i < filters.length; i++) {
-      query.where(filters[i].fieldName).in(filters[i].value)
-  }
-
-  query.exec(function(err,doc){
-    console.log(doc)
-    res.json({
-      response: "Mahaprasad",
-      data:doc
-    });
-  });
-
-
-
-
-
-
-  // var query = ProductData.find();
-  // query.where('myattributes.color').equals(['Red']);
-  // query.exec(function(err,doc){
-  //   console.log(doc)
-  //   res.json({
-  //     response: "Mahaprasad",
-  //     data:doc
-  //   });
-  // });
-
-
-
-
-
-});
-
-
-
-
-
-app.get('/whatsapp', (req,res)=>{
-
-  const accountSid = 'AC47698c5d1a6e08d66b9635bed88aed72';
-  const authToken = '55f9adf08154d1e82726a05707a2d10a';
-  const client = require('twilio')(accountSid, authToken);
-
-  client.messages
-        .create({
-           from: 'whatsapp:+18056692951',
-           body: 'Hello there!',
-           to: 'whatsapp:+919658667287'
-         })
-        .then(message => console.log(message.sid))
-        .catch((error) => {
-            console.error(error);
-          })
-
-        res.json({
-          response:true
-        })
-
-})
-
-
-app.get('/generate-invoice', (req,res)=>{
-
-  //Import the library into your project
-var easyinvoice = require('easyinvoice');
-
-var data = {
-    // Customize enables you to provide your own templates
-    // Please review the documentation for instructions and examples
-    "customize": {
-        //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html
-    },
-    "images": {
-        // The logo on top of your invoice
-        "logo": "https://public.easyinvoice.cloud/img/logo_en_original.png",
-        // The invoice background
-        "background": "https://public.easyinvoice.cloud/img/watermark-draft.jpg"
-    },
-    // Your own data
-    "sender": {
-        "company": "Sample Corp",
-        "address": "Sample Street 123",
-        "zip": "1234 AB",
-        "city": "Sampletown",
-        "country": "Samplecountry"
-        //"custom1": "custom value 1",
-        //"custom2": "custom value 2",
-        //"custom3": "custom value 3"
-    },
-    // Your recipient
-    "client": {
-        "company": "Client Corp",
-        "address": "Clientstreet 456",
-        "zip": "4567 CD",
-        "city": "Clientcity",
-        "country": "Clientcountry"
-        // "custom1": "custom value 1",
-        // "custom2": "custom value 2",
-        // "custom3": "custom value 3"
-    },
-    "information": {
-        // Invoice number
-        "number": "2021.0001",
-        // Invoice data
-        "date": "12-12-2021",
-        // Invoice due date
-        "due-date": "31-12-2021"
-    },
-    // The products you would like to see on your invoice
-    // Total values are being calculated automatically
-    "products": [
-        {
-            "quantity": 2,
-            "description": "Product 1",
-            "tax-rate": 6,
-            "price": 33.87
-        }
-    ],
-    // The message you would like to display on the bottom of your invoice
-    "bottom-notice": "Kindly pay your invoice within 15 days.",
-    // Settings to customize your invoice
-    "settings": {
-        "currency": "USD", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
-        // "locale": "nl-NL", // Defaults to en-US, used for number formatting (See documentation 'Locales and Currency')
-        // "tax-notation": "gst", // Defaults to 'vat'
-        // "margin-top": 25, // Defaults to '25'
-        // "margin-right": 25, // Defaults to '25'
-        // "margin-left": 25, // Defaults to '25'
-        // "margin-bottom": 25, // Defaults to '25'
-        // "format": "A4", // Defaults to A4, options: A3, A4, A5, Legal, Letter, Tabloid
-        // "height": "1000px", // allowed units: mm, cm, in, px
-        // "width": "500px", // allowed units: mm, cm, in, px
-        // "orientation": "landscape", // portrait or landscape, defaults to portrait
-    },
-    // Translate your invoice to your preferred language
-    "translate": {
-        // "invoice": "FACTUUR",  // Default to 'INVOICE'
-        // "number": "Nummer", // Defaults to 'Number'
-        // "date": "Datum", // Default to 'Date'
-        // "due-date": "Verloopdatum", // Defaults to 'Due Date'
-        // "subtotal": "Subtotaal", // Defaults to 'Subtotal'
-        // "products": "Producten", // Defaults to 'Products'
-        // "quantity": "Aantal", // Default to 'Quantity'
-        // "price": "Prijs", // Defaults to 'Price'
-        // "product-total": "Totaal", // Defaults to 'Total'
-        // "total": "Totaal" // Defaults to 'Total'
-    },
-};
-
-//Create your invoice! Easy!
-easyinvoice.createInvoice(data, function (result) {
-    //The response will contain a base64 encoded PDF file
-    console.log('PDF base64 string: ', result.pdf);
-
-    res.json({
-      response:true,
-      data:result.pdf
-    })
-});
-
-
-
-
-})
-
-
-
-
-app.get("/api/test-elementmatch", async (req, res) => {
-
-  var ProductData = require("./models/Product");
-
-  var searchQuery = {
-    status:'Active',
-    type:['Configurable','Simple'],
-    $or:[{"pricemain":{"$gte": 1111111111,"$lte": 222222222222222}}]
-  };
-  // if( your_variable !== "" ) {
-      // searchQuery["myattributes.Group"] = ['C'];
-      // searchQuery["myattributes.Color"] = ['Blue'];
-
-  // }
-  // if( your_second_variable !== "" ) {
-  //     query["some_other_key"] = your_second_variable;
-  // }
-
-
-
-  var query2={
-    "status":'Active',
-    "type": { "$in": [ 'Configurable', 'Simple' ] },
-    "pricemain":{"$gte": 0,"$lte": 222222222222222},
-    // "category": { "$in": ['Women','Kids'] },
-  }
-
-
-  var doc = await ProductData.find(query2).select({'updatedAt':0});
-  // query.exec(async function(err,doc){
-
-
-
-
-
-    res.json({
-      response: "Mahaprasad",
-      count:{
-        category: await ProductData.aggregate([{ $match: query2 },{ $unwind: "$category" },{ $sortByCount: "$category" }]),
-        group: await ProductData.aggregate([{ $match: query2 },{ $unwind: "$myattributes.Group" },{ $sortByCount: "$myattributes.Group" }]),
-        color: await ProductData.aggregate([{ $match: query2 },{ $unwind: "$myattributes.Color" },{ $sortByCount: "$myattributes.Color" }]),
-      },
-      data:doc
-    });
-
-
-});
-
-
-// ****** CURRENCY CONVERTER
-// US dollar (USD)
-// Euro (EUR)
-// Japanese yen (JPY)
-// Pound sterling (GBP)
-// Australian dollar (AUD)
-// Canadian dollar (CAD)
-// Swiss franc (CHF)
-// Chinese renminbi (CNH)
-// Hong Kong dollar (HKD)
-// New Zealand dollar (NZD)
-
-var inr=1;
-var usd=82.04;
-var eur=82.10;
-var ukp=82.10;
-var jpy=82.10;
-// var inr=1;
-
-
-
-console.log((inr/usd)*425)
 
 
 
