@@ -298,92 +298,195 @@ app.get("/", async (req, res) => {
 
 
 app.get("/test1", async (req, res) => {
-  // https://github.com/mrvautin/expressCart/blob/master/config/payment/config/authorizenet.json
-  var authorizenetConfig ={
-        "description": "Card payment",
-        "loginId": "2s4VR56fb3Q",
-        "transactionKey": "54W2tP86PgKn2f9X",
-        "clientKey": "clientKey",
-        "mode": "test" //live
-  }
-
-  let authorizeUrl = 'https://api.authorize.net/xml/v1/request.api';
-  // if(authorizenetConfig.mode === 'test'){
-  //       authorizeUrl = 'https://apitest.authorize.net/xml/v1/request.api';
+  // // https://github.com/mrvautin/expressCart/blob/master/config/payment/config/authorizenet.json
+  // var authorizenetConfig ={
+  //       "description": "Card payment",
+  //       "loginId": "2s4VR56fb3Q",
+  //       "transactionKey": "9y2P9nfB6UA5cD9S",
+  //       "clientKey": "clientKey",
+  //       "mode": "live" //live
   // }
+  //
+  // // let authorizeUrl = 'https://api.authorize.net/xml/v1/request.api';
+  // // if(authorizenetConfig.mode === 'test'){
+  //       authorizeUrl = 'https://apitest.authorize.net/xml/v1/request.api';
+  // // }
+  //
+  // const chargeJson = {
+  //       createTransactionRequest: {
+  //           merchantAuthentication: {
+  //               name: authorizenetConfig.loginId,
+  //               transactionKey: authorizenetConfig.transactionKey
+  //           },
+  //           transactionRequest: {
+  //               transactionType: 'authCaptureTransaction',
+  //               amount: 11,
+  //               payment: {
+  //                   opaqueData: {
+  //                       dataDescriptor: 'Card payment',
+  //                       dataValue: 11
+  //                   }
+  //               }
+  //           }
+  //       }
+  //   };
+  //
+  //
+  //
+  //
+  //   const axios = require('axios');
+  //   axios.post(authorizeUrl, chargeJson, { responseType: 'text' })
+  //   .then(async(response) => {
+  //
+  //       console.log(response);
+  //
+  //       // res.json({
+  //       //   response
+  //       // })
+  //
+  //       // This is crazy but the Authorize.net API returns a string with BOM and totally
+  //       // screws the JSON response being parsed. So many hours wasted!
+  //       // const txn = JSON.parse(stripBom(response.data)).transactionResponse;
+  //       //
+  //       // if(!txn){
+  //       //     console.log('Declined request payload', chargeJson);
+  //       //     console.log('Declined response payload', response.data);
+  //       //     res.status(400).json({ err: 'Your payment has declined. Please try again' });
+  //       //     return;
+  //       // }
+  //
+  //       // order status if approved
+  //       // let orderStatus = 'Paid';
+  //       // let approved = true;
+  //       // let paymentMessage = 'Your payment was successfully completed';
+  //       // if(txn && txn.responseCode !== '1'){
+  //       //     console.log('Declined response payload', response.data);
+  //       //     paymentMessage = 'Your payment was declined';
+  //       //     orderStatus = 'Declined';
+  //       //     approved = false;
+  //       // }
+  //
+  //
+  //
+  //
+  //   })
+  //   .catch((err) => {
+  //       console.log('Error sending payment to API', err);
+  //       res.status(400).json({ err: 'Your payment has declined. Please try again' });
+  //   });
 
-  const chargeJson = {
-        createTransactionRequest: {
-            merchantAuthentication: {
-                name: authorizenetConfig.loginId,
-                transactionKey: authorizenetConfig.transactionKey
-            },
-            transactionRequest: {
-                transactionType: 'authCaptureTransaction',
-                amount: 11,
-                payment: {
-                    opaqueData: {
-                        dataDescriptor: 'Card payment',
-                        dataValue: 11
-                    }
-                }
-            }
+
+
+
+
+
+  const { loginId, transactionKey } = require('./config');
+  const ApiContracts = require('authorizenet').APIContracts;
+  const ApiControllers = require('authorizenet').APIControllers;
+  const SDKConstants = require('authorizenet').Constants;
+
+
+
+  // const validationErrors = validateForm(req);
+  //
+  //   if(validationErrors.length > 0) {
+  //       res.json({ errors: validationErrors });
+  //       return;
+  //   }
+
+    // const { cc, cvv, expire, amount } = req.body;
+
+
+    const cc='374245455400126';
+    const cvv='123';
+
+    const expire='052026';
+
+    const amount='12';
+
+
+
+
+    const merchantAuthenticationType = new ApiContracts.MerchantAuthenticationType();
+	merchantAuthenticationType.setName(loginId);
+    merchantAuthenticationType.setTransactionKey(transactionKey);
+
+    const creditCard = new ApiContracts.CreditCardType();
+	creditCard.setCardNumber(cc);
+	creditCard.setExpirationDate(expire);
+    creditCard.setCardCode(cvv);
+
+    const paymentType = new ApiContracts.PaymentType();
+    paymentType.setCreditCard(creditCard);
+
+    const transactionSetting = new ApiContracts.SettingType();
+	transactionSetting.setSettingName('recurringBilling');
+    transactionSetting.setSettingValue('false');
+
+    const transactionSettingList = [];
+    transactionSettingList.push(transactionSetting);
+
+    const transactionSettings = new ApiContracts.ArrayOfSetting();
+	transactionSettings.setSetting(transactionSettingList);
+
+    const transactionRequestType = new ApiContracts.TransactionRequestType();
+	transactionRequestType.setTransactionType(ApiContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
+	transactionRequestType.setPayment(paymentType);
+	transactionRequestType.setAmount(amount);
+    transactionRequestType.setTransactionSettings(transactionSettings);
+
+    const createRequest = new ApiContracts.CreateTransactionRequest();
+	createRequest.setMerchantAuthentication(merchantAuthenticationType);
+    createRequest.setTransactionRequest(transactionRequestType);
+
+    const ctrl = new ApiControllers.CreateTransactionController(createRequest.getJSON());
+
+    ctrl.execute(() => {
+        const apiResponse = ctrl.getResponse();
+        const response = new ApiContracts.CreateTransactionResponse(apiResponse);
+
+        if(response !== null) {
+          res.json({ response: response })
+            // if(response.getMessages().getResultCode() === ApiContracts.MessageTypeEnum.OK) {
+            //     if(response.getTransactionResponse().getMessages() !== null) {
+            //         res.json({ success: 'Transaction was successful.' });
+            //     } else {
+            //         if(response.getTransactionResponse().getErrors() !== null) {
+            //             let code = response.getTransactionResponse().getErrors().getError()[0].getErrorCode();
+            //             let text = response.getTransactionResponse().getErrors().getError()[0].getErrorText();
+            //             res.json({
+            //                 error: `${code}: ${text}`
+            //             });
+            //         } else {
+            //             res.json({ error: 'Transaction failed.' });
+            //         }
+            //     }
+            // } else {
+            //     if(response.getTransactionResponse() !== null && response.getTransactionResponse().getErrors() !== null){
+            //         let code = response.getTransactionResponse().getErrors().getError()[0].getErrorCode();
+            //         let text = response.getTransactionResponse().getErrors().getError()[0].getErrorText();
+            //         res.json({
+            //             error: `${code}: ${text}`
+            //         });
+            //     } else {
+            //         let code = response.getMessages().getMessage()[0].getCode();
+            //         let text = response.getMessages().getMessage()[0].getText();
+            //         res.json({
+            //             error: `${code}: ${text}`
+            //         });
+            //     }
+            // }
+
+        } else {
+            res.json({ error: 'No response.' });
         }
-    };
-
-
-
-
-    const axios = require('axios');
-    axios.post(authorizeUrl, chargeJson, { responseType: 'text' })
-    .then(async(response) => {
-
-        console.log(response);
-
-        // res.json({
-        //   response
-        // })
-
-        // This is crazy but the Authorize.net API returns a string with BOM and totally
-        // screws the JSON response being parsed. So many hours wasted!
-        // const txn = JSON.parse(stripBom(response.data)).transactionResponse;
-        //
-        // if(!txn){
-        //     console.log('Declined request payload', chargeJson);
-        //     console.log('Declined response payload', response.data);
-        //     res.status(400).json({ err: 'Your payment has declined. Please try again' });
-        //     return;
-        // }
-
-        // order status if approved
-        // let orderStatus = 'Paid';
-        // let approved = true;
-        // let paymentMessage = 'Your payment was successfully completed';
-        // if(txn && txn.responseCode !== '1'){
-        //     console.log('Declined response payload', response.data);
-        //     paymentMessage = 'Your payment was declined';
-        //     orderStatus = 'Declined';
-        //     approved = false;
-        // }
-
-
-
-
-    })
-    .catch((err) => {
-        console.log('Error sending payment to API', err);
-        res.status(400).json({ err: 'Your payment has declined. Please try again' });
     });
 
 
 
 
 
-
-
-
-
-
+  //
   // res.json({
   //   response:true
   // })

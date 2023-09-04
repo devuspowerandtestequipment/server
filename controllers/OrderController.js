@@ -683,26 +683,19 @@ const paypal_first = (req,res) => {
 
       ///////////////////////////////PAYPAL///////////////////////////////
 
-      paypal.configure({
-        'mode': 'sandbox', //sandbox or live
-        'client_id': 'AZiyBCGDjx1LEyi48OWVH9-zzyOh4bvfl7Q0dBEz85QpQCTh4KMF_LT9eWnKH_iBBRwdzrFurZaZNfPK',
-        'client_secret': 'ELqeN0l1RcdurMFb0uUl9fzswCXNG8VVwAheLIgUK6r1Fu3McN5tqu8aXddW8L2mLZvsj_XSnIOcn90C'
-      });
-
-
-
-
       // paypal.configure({
       //   'mode': 'sandbox', //sandbox or live
-      //   'client_id': 'AY10bLMyZLtP3wVNODGh6mdmzGjc1XxBg7m_s61q07kFvEAfVCDYv_16XsX09KytlrAnCx_VTJTnFf-F',
-      //   'client_secret': 'EKFUR80NNpYESG7u5Au6oC-22noDWM7YzuSomDebJgWr61RqQpFA440NdtWqkbTJ_1CuAtXJ9QwGrVFc'
+      //   'client_id': 'AZiyBCGDjx1LEyi48OWVH9-zzyOh4bvfl7Q0dBEz85QpQCTh4KMF_LT9eWnKH_iBBRwdzrFurZaZNfPK',
+      //   'client_secret': 'ELqeN0l1RcdurMFb0uUl9fzswCXNG8VVwAheLIgUK6r1Fu3McN5tqu8aXddW8L2mLZvsj_XSnIOcn90C'
       // });
 
-      // paypal.configure({
-      //   'mode': 'live', //sandbox or live
-      //   'client_id': 'Ab620lyNESUWkl16w4MPK7HrCACSTTWB1Kd83rGeQAEw_fMiJ6BWbTzii2ZeJrLKU8QsA9p-1D-smjk6',
-      //   'client_secret': 'ECozQIybzglUgNq5Kb_QyagjS39vjlEFNjskpLUnWrLGZrDrj60a4ed1ZC0WNcyNKlLCDUnxIDIJtP3R'
-      // });
+
+      paypal.configure({
+        'mode': 'live', //sandbox or live
+        'client_id': 'AQjYJy3KoL-MNi3Babp7yllH3pyxRJc9N83g_zC2_mo_gNEr-ZaAmDkGLDW72F03pNkEAZz1fC4hJANW',
+        'client_secret': 'EPMKKzG_SZbok3KQG7Ab2d_WaxbSxEVjj2UwZGxUzv7PccHXuEJB4NhghZ_kHFWCGhzD2-eJXOWakw0R'
+      });
+
 
 
         var create_payment_json = {

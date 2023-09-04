@@ -66,6 +66,7 @@
     "twilio": "^3.83.4",
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.8",
+    "validator": "^13.11.0",
     "velocityjs": "^2.0.3",
     "whatsapp-web.js": "^1.18.4"
   }
