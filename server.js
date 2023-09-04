@@ -302,7 +302,7 @@ app.get("/test1", async (req, res) => {
   var authorizenetConfig ={
         "description": "Card payment",
         "loginId": "2s4VR56fb3Q",
-        "transactionKey": "7RXJ5698f9LERnjx",
+        "transactionKey": "54W2tP86PgKn2f9X",
         "clientKey": "clientKey",
         "mode": "test" //live
   }
@@ -323,7 +323,7 @@ app.get("/test1", async (req, res) => {
                 amount: 11,
                 payment: {
                     opaqueData: {
-                        dataDescriptor: 'Payment',
+                        dataDescriptor: 'Card payment',
                         dataValue: 11
                     }
                 }
@@ -339,6 +339,10 @@ app.get("/test1", async (req, res) => {
     .then(async(response) => {
 
         console.log(response);
+
+        // res.json({
+        //   response
+        // })
 
         // This is crazy but the Authorize.net API returns a string with BOM and totally
         // screws the JSON response being parsed. So many hours wasted!
