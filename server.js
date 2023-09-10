@@ -160,11 +160,10 @@ app.get("/paypal", function (req, res) {
 
 
           // res.json({
-          //   payment
+          //   payment:111
           // })
       }
   });
-
 
   // res.json({
   //   response:true
