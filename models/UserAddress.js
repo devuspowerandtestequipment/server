@@ -39,6 +39,19 @@ const UserAddressSchema = new Schema({
   landmark:{
     type:String
   },
+
+  company_name:{
+    type:String
+  },
+  prefrred_shipping:{
+    type:String
+  },
+  account_number:{
+    type:String
+  },
+  taxid:{
+    type:String
+  },
 },{timestamps:true})
 
 const UserAddress = mongoose.model('UserAddress',UserAddressSchema)
