@@ -97,7 +97,24 @@ app.get("/api/imagekitauth", function (req, res) {
 });
 
 
+app.get("/update_product", function (req, res) {
 
+
+  const TProduct = require("./models/Product");
+
+  TProduct.update({},{maximum_order: 3},{multi: true})
+  .then(as=>{
+    res.json({
+      response:true
+    })
+  }).catch((err)=>{
+    res.json({
+      response:false
+    })
+  })
+
+
+});
 
 
 
