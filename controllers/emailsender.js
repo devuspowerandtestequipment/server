@@ -21,32 +21,45 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
       locals.footer_address1='Oceanside, CA 92057, USA';
       locals.footer_address2='2023';
       locals.footer_unsubscribe=`Don't like these emails`;
-      locals.helpemail='sales@uspowerandtestequipment.com';
+      locals.helpemail='uspowerandtest@gmail.com';
       locals.websitename='USPowerAndTestequipment';
 
 
       const transporter = nodemailer.createTransport({
-        // service: process.env.EMAIL_SERVICE,
+        // service: process.env.EMAIL_SERVICE, // hide this for godaddy
         // host: process.env.EMAIL_HOST,
-
-        host: 'smtp.office365.com', // Office 365 server
-        port: 587,     // secure SMTP
-        secure: false, // false for TLS - as a boolean not string - but the default is false so just remove this completely
-
-
+        // secure: false,
+        // port: 587
+        service: 'gmail',
+        host: 'smtp.gmail.com',
         auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        },
-        tls: {
-            ciphers: 'SSLv3'
-        }
+          user: 'uspowerandtest@gmail.com',
+          pass: 'wjzuuhutuwqbrxwo'
+          }
         });
         const email = new Email({
         transport: transporter,
         send: true,
         preview: false,
       });
+
+      // const transporter = nodemailer.createTransport({
+      //   host: 'smtp.office365.com', // Office 365 server
+      //   port: 587,     // secure SMTP
+      //   secure: false,
+      //   auth: {
+      //     user: process.env.EMAIL_USER,
+      //     pass: process.env.EMAIL_PASS
+      //   },
+      //   tls: {
+      //       ciphers: 'SSLv3'
+      //   }
+      //   });
+      //   const email = new Email({
+      //   transport: transporter,
+      //   send: true,
+      //   preview: false,
+      // });
 
 
       // const transporter = nodemailer.createTransport({
@@ -75,7 +88,7 @@ function emailsendFunction(email_templete,email_to,locals,email_name,want_to_sto
 
           var email_data={
             email_to:email_to,
-            email_from:process.env.EMAIL_USER,
+            email_from:'uspowerandtest@gmail.com',
             email_subject:response.originalMessage.subject,
             email_body:response.originalMessage.html,
             status:true,

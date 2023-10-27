@@ -521,12 +521,14 @@ app.get("/sendemail", (req, res) => {
 
   const transporter = nodemailer.createTransport({
     // service: process.env.EMAIL_SERVICE, // hide this for godaddy
-    host: process.env.EMAIL_HOST,
+    // host: process.env.EMAIL_HOST,
     // secure: false,
     // port: 587
+    service: 'gmail',
+    host: 'smtp.gmail.com',
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
+      user: 'uspowerandtest@gmail.com',
+      pass: 'wjzuuhutuwqbrxwo'
       }
     });
     const email = new Email({
@@ -538,7 +540,7 @@ app.get("/sendemail", (req, res) => {
    email.send({
         template: 'testemail',
         message: {
-          from:process.env.EMAIL_FROM+' '+process.env.EMAIL_USER,
+          from:process.env.EMAIL_FROM+' '+'uspowerandtest@gmail.com',
           to:'biswanathprasadsingh9@gmail.com',
         },
         locals: {
