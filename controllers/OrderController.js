@@ -710,7 +710,7 @@ const paypal_first = (req,res) => {
           "transactions": [{
               "item_list": {
                   "items": [{
-                      "name": "ReactNodeEcommerce Payment",
+                      "name": "Us power and test equipment Payment",
                       "sku": "item",
                       "price": req.param("amount"),
                       "currency": "USD",
@@ -721,12 +721,13 @@ const paypal_first = (req,res) => {
                   "currency": "USD",
                   "total": Number(req.param("amount"))
               },
-              "description": "ReactNodeEcommerce product payment"
+              "description": "Us power and test equipment"
           }]
       };
       paypal.payment.create(create_payment_json, function (error, payment) {
           if (error) {
-              throw error;
+              // throw error;
+              res.redirect(`${process.env.WEBSITE_URL}/payment`);
           } else {
               console.log('payment',payment);
               for(let i = 0;i < payment.links.length;i++){
@@ -737,6 +738,9 @@ const paypal_first = (req,res) => {
           }
       });
       ///////////////////////////////PAYPAL///////////////////////////////
+  })
+  .catch(err=>{
+    res.redirect(`${process.env.WEBSITE_URL}/payment`);
   })
 }
 
@@ -762,7 +766,7 @@ const stripe_first = async (req,res) => {
               price_data: {
                 currency: "inr",
                 product_data: {
-                  name: 'ReactNodeEcommerce Payment',
+                  name: 'Us power and test equipment Payment',
                 },
                 unit_amount: req.param("amount") * 100,
               },
