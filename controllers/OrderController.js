@@ -710,7 +710,7 @@ const paypal_first = (req,res) => {
     console.log(payment_code._id);
     // window.location.href=`https://pay.uspowerandtestequipment.com?id=${payment_code._id}`;
 
-    res.redirect(`https://pay.uspowerandtestequipment.com?id=${payment_code._id}`);
+    res.redirect(`http://127.0.0.1:8000?id=${payment_code._id}`);
 
 
       ///////////////////////////////PAYPAL///////////////////////////////
