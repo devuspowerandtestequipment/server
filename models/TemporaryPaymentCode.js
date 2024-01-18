@@ -12,6 +12,12 @@ const TemporaryPaymentCodeSchema = new Schema({
     type:String,
     default:uuid(),
   },
+  payment_gateway:{
+    type:String,
+  },
+  payment_amount:{
+    type:Number,
+  },
 },{timestamps:true})
 
 const TemporaryPaymentCode = mongoose.model('TemporaryPaymentCode',TemporaryPaymentCodeSchema)

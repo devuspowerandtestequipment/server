@@ -50,6 +50,9 @@ router.get('/payments_useruser/:user_id',OrderController.payments_useruser);
 
 
 // payment
+
+router.get('/paymentid/get/:id',OrderController.paymentid);
+
 router.get('/paypal_first',OrderController.paypal_first);
 router.get('/paypal_second',OrderController.paypal_second);
 

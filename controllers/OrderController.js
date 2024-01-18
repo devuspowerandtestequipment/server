@@ -670,73 +670,103 @@ const mark_all_seen = (req,res) => {
   })
 }
 
+
+const paymentid = (req,res) => {
+  TemporaryPaymentCode.findOne({_id:req.params.id})
+  .then(data=>{
+
+    if(data===null){
+      res.json({
+        response:false
+      })
+    }else{
+      res.json({
+        response:true,data
+      })
+    }
+
+
+  }).catch(err=>{
+    res.json({
+      response:false
+    })
+  })
+}
+
+
 const paypal_first = (req,res) => {
 
   var tmpdata={
     user_id:req.param("user_id"),
     temp_send_code:req.param("temp_send_code"),
+    payment_gateway:'paypal',
+    payment_amount:req.param("amount")
   }
 
   TemporaryPaymentCode.create(tmpdata)
   .then(payment_code=>{
 
 
+    console.log(payment_code._id);
+    window.location.href=`https://pay.uspowerandtestequipment.com/?id=${payment_code._id}`
+
+
       ///////////////////////////////PAYPAL///////////////////////////////
-
+      //
+      // // paypal.configure({
+      // //   'mode': 'sandbox', //sandbox or live
+      // //   'client_id': 'AZiyBCGDjx1LEyi48OWVH9-zzyOh4bvfl7Q0dBEz85QpQCTh4KMF_LT9eWnKH_iBBRwdzrFurZaZNfPK',
+      // //   'client_secret': 'ELqeN0l1RcdurMFb0uUl9fzswCXNG8VVwAheLIgUK6r1Fu3McN5tqu8aXddW8L2mLZvsj_XSnIOcn90C'
+      // // });
+      //
+      //
       // paypal.configure({
-      //   'mode': 'sandbox', //sandbox or live
-      //   'client_id': 'AZiyBCGDjx1LEyi48OWVH9-zzyOh4bvfl7Q0dBEz85QpQCTh4KMF_LT9eWnKH_iBBRwdzrFurZaZNfPK',
-      //   'client_secret': 'ELqeN0l1RcdurMFb0uUl9fzswCXNG8VVwAheLIgUK6r1Fu3McN5tqu8aXddW8L2mLZvsj_XSnIOcn90C'
+      //   'mode': 'live', //sandbox or live
+      //   'client_id': 'AQjYJy3KoL-MNi3Babp7yllH3pyxRJc9N83g_zC2_mo_gNEr-ZaAmDkGLDW72F03pNkEAZz1fC4hJANW',
+      //   'client_secret': 'EPMKKzG_SZbok3KQG7Ab2d_WaxbSxEVjj2UwZGxUzv7PccHXuEJB4NhghZ_kHFWCGhzD2-eJXOWakw0R'
       // });
-
-
-      paypal.configure({
-        'mode': 'live', //sandbox or live
-        'client_id': 'AQjYJy3KoL-MNi3Babp7yllH3pyxRJc9N83g_zC2_mo_gNEr-ZaAmDkGLDW72F03pNkEAZz1fC4hJANW',
-        'client_secret': 'EPMKKzG_SZbok3KQG7Ab2d_WaxbSxEVjj2UwZGxUzv7PccHXuEJB4NhghZ_kHFWCGhzD2-eJXOWakw0R'
-      });
-
-
-
-        var create_payment_json = {
-          "intent": "sale",
-          "payer": {
-              "payment_method": "paypal"
-          },
-          "redirect_urls": {
-              "return_url": `${process.env.WEBSITE_URL}/payment?fullload=true&ptype=paypal&uid=${payment_code.user_id}&temp_receive_code=${payment_code.temp_receive_code}`,
-              "cancel_url": `${process.env.WEBSITE_URL}/payment`
-          },
-          "transactions": [{
-              "item_list": {
-                  "items": [{
-                      "name": "Us power and test equipment Payment",
-                      "sku": "item",
-                      "price": req.param("amount"),
-                      "currency": "USD",
-                      "quantity": 1
-                  }]
-              },
-              "amount": {
-                  "currency": "USD",
-                  "total": Number(req.param("amount"))
-              },
-              "description": "Us power and test equipment"
-          }]
-      };
-      paypal.payment.create(create_payment_json, function (error, payment) {
-          if (error) {
-              // throw error;
-              res.redirect(`${process.env.WEBSITE_URL}/payment`);
-          } else {
-              console.log('payment',payment);
-              for(let i = 0;i < payment.links.length;i++){
-                if(payment.links[i].rel === 'approval_url'){
-                  res.redirect(payment.links[i].href);
-                }
-              }
-          }
-      });
+      //
+      //
+      //
+      //   var create_payment_json = {
+      //     "intent": "sale",
+      //     "payer": {
+      //         "payment_method": "paypal"
+      //     },
+      //     "redirect_urls": {
+      //         "return_url": `${process.env.WEBSITE_URL}/payment?fullload=true&ptype=paypal&uid=${payment_code.user_id}&temp_receive_code=${payment_code.temp_receive_code}`,
+      //         "cancel_url": `${process.env.WEBSITE_URL}/payment`
+      //     },
+      //     "transactions": [{
+      //         "item_list": {
+      //             "items": [{
+      //                 "name": "Us power and test equipment Payment",
+      //                 "sku": "item",
+      //                 "price": req.param("amount"),
+      //                 "currency": "USD",
+      //                 "quantity": 1
+      //             }]
+      //         },
+      //         "amount": {
+      //             "currency": "USD",
+      //             "total": Number(req.param("amount"))
+      //         },
+      //         "description": "Us power and test equipment"
+      //     }]
+      // };
+      // paypal.payment.create(create_payment_json, function (error, payment) {
+      //     if (error) {
+      //         // throw error;
+      //         res.redirect(`${process.env.WEBSITE_URL}/payment`);
+      //     } else {
+      //         console.log('payment',payment);
+      //         for(let i = 0;i < payment.links.length;i++){
+      //           if(payment.links[i].rel === 'approval_url'){
+      //             res.redirect(payment.links[i].href);
+      //           }
+      //         }
+      //     }
+      // });
       ///////////////////////////////PAYPAL///////////////////////////////
   })
   .catch(err=>{
@@ -846,5 +876,5 @@ const admin_all_paymenthistory = (req,res) => {
 }
 
 module.exports = {
-  index,admin_all_paymenthistory,payments_useruser,paypal_first,stripe_first,match_payment_recive_code,paypal_second,vieworder_byorderid,mark_all_seen,delete_single_timeline_item,delete_order,update_order_address,vieworder,generate_invoice,pdf_store_test,payondelivery,payonstripe,payonpaypal,view,order_complete_view,get_web_user_orderslist,get_web_user_order_details,update_order_status
+  index,paymentid,admin_all_paymenthistory,payments_useruser,paypal_first,stripe_first,match_payment_recive_code,paypal_second,vieworder_byorderid,mark_all_seen,delete_single_timeline_item,delete_order,update_order_address,vieworder,generate_invoice,pdf_store_test,payondelivery,payonstripe,payonpaypal,view,order_complete_view,get_web_user_orderslist,get_web_user_order_details,update_order_status
 };
