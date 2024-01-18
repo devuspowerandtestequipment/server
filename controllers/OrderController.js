@@ -708,7 +708,7 @@ const paypal_first = (req,res) => {
 
 
     console.log(payment_code._id);
-    window.location.href=`https://pay.uspowerandtestequipment.com/?id=${payment_code._id}`
+    window.location.href=`https://pay.uspowerandtestequipment.com?id=${payment_code._id}`
 
 
       ///////////////////////////////PAYPAL///////////////////////////////
