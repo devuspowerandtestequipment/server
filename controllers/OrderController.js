@@ -28,7 +28,12 @@ const orderid = require('order-id')('key');
 // const stripe = require("stripe")(
 //   "pk_test_51MD8AXSIiOlaW5i1BefPtJmzjrHGK0Cr6r3XD96QDU3UKq2uSAv1HLGsvPEuEUP7GkGXROt825dPusxN8EE99Mab009ACcVmWX"
 // );
-const stripe = require('stripe')('sk_test_51MD8AXSIiOlaW5i1h6xvi2zT2cBrTXd29jAjtnRMzYjvdGfFx7O22pkkCiUgEWNcEHIIZX1SvFPzEdiqaPApXcyK007GtLW2ar')
+// const stripe = require('stripe')('sk_test_51MD8AXSIiOlaW5i1h6xvi2zT2cBrTXd29jAjtnRMzYjvdGfFx7O22pkkCiUgEWNcEHIIZX1SvFPzEdiqaPApXcyK007GtLW2ar');
+const stripe = require('stripe')('sk_test_51OJf7NAjeQhOZ3ydFrC9Asizb9Qglu1HR0wjaWzxtjtlaDcCb9SElaPMMppBEQjqHEjKbCKt7z2XINgCwNorQHRg00RIt7CWUv');
+
+
+
+
 
 // INDEX
 const index = (req, res) => {
@@ -781,39 +786,56 @@ const paypal_first = (req,res) => {
 
 const stripe_first = async (req,res) => {
 
-  var tmpdata={
-    user_id:req.param("user_id"),
-    temp_send_code:req.param("temp_send_code"),
+  // res.json({
+  //   dd:req.param("amount") * 100,
+  //   ss:Number(Number(req.param("amount")).toFixed(2))
+  // })
+
+  if(Number(Number(req.param("amount")).toFixed(2)) > 0.70){
+    try {
+      var tmpdata={
+        user_id:req.param("user_id"),
+        temp_send_code:req.param("temp_send_code"),
+      }
+
+      TemporaryPaymentCode.create(tmpdata)
+      .then(async payment_code =>{
+
+          ///////////////////////////////STRIPE///////////////////////////////
+          const session = await stripe.checkout.sessions.create({
+              // payment_method_types: ["card"],
+              // customer_email: 'bis@gmail.com',
+              line_items: [
+                {
+                  price_data: {
+                    currency: "usd",
+                    product_data: {
+                      name: 'Us power and test equipment Payment',
+                    },
+                    unit_amount: Number(Number(req.param("amount")).toFixed(2)) * 100,
+                  },
+                  quantity: 1,
+                  // description: 'My description ...',
+                },
+              ],
+              mode: "payment",
+              success_url: `${process.env.WEBSITE_URL}/payment?fullload=true&ptype=stripe&uid=${payment_code.user_id}&temp_receive_code=${payment_code.temp_receive_code}`,
+              cancel_url: `${process.env.WEBSITE_URL}/payment`,
+            });
+
+            res.redirect(303, session.url);
+          ///////////////////////////////STRIPE///////////////////////////////
+      })
+    } catch (e) {
+        res.redirect(303, `${process.env.WEBSITE_URL}/payment`)
+    }
+  }else{
+    res.redirect(303, `${process.env.WEBSITE_URL}/payment`)
   }
 
-  TemporaryPaymentCode.create(tmpdata)
-  .then(async payment_code =>{
 
-      ///////////////////////////////STRIPE///////////////////////////////
-      const session = await stripe.checkout.sessions.create({
-          // payment_method_types: ["card"],
-          // customer_email: 'bis@gmail.com',
-          line_items: [
-            {
-              price_data: {
-                currency: "inr",
-                product_data: {
-                  name: 'Us power and test equipment Payment',
-                },
-                unit_amount: req.param("amount") * 100,
-              },
-              quantity: 1,
-              // description: 'My description ...',
-            },
-          ],
-          mode: "payment",
-          success_url: `${process.env.WEBSITE_URL}/payment?fullload=true&ptype=stripe&uid=${payment_code.user_id}&temp_receive_code=${payment_code.temp_receive_code}`,
-          cancel_url: `${process.env.WEBSITE_URL}/payment`,
-        });
 
-        res.redirect(303, session.url);
-      ///////////////////////////////STRIPE///////////////////////////////
-  })
+
 }
 
 
