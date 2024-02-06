@@ -561,8 +561,13 @@ app.get("/sendemail", (req, res) => {
 });
 
 
+function removeNonLetters(str) {
+  // return str.replace(/[^[A-Za-z0-9]/gi, '');
+  return str.replace(/[^\w\s]/gi, '')
+}
 
 
+console.log('sss',removeNonLetters('Agilent MSO6032A Mixed Signal 300 MHz, 2+16 Ch DSO6032A (many in stock) @#$@1'))
 
 
 

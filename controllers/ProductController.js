@@ -1144,7 +1144,7 @@ const productsearch = async (req,res) => {
   if(!req.body.search_product_name){
     var search_key = '';
   }else{
-    var search_key = req.body.search_product_name;
+    var search_key = req.body.search_product_name.replace(/[^\w\s]/gi, '');
     // var search_key = 'betta red';
 
     var search_key1=_.words(search_key, /[^, ]+/g);

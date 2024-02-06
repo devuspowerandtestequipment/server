@@ -28,7 +28,7 @@ const orderid = require('order-id')('key');
 // const stripe = require("stripe")(
 //   "pk_test_51MD8AXSIiOlaW5i1BefPtJmzjrHGK0Cr6r3XD96QDU3UKq2uSAv1HLGsvPEuEUP7GkGXROt825dPusxN8EE99Mab009ACcVmWX"
 // );
-// const stripe = require('stripe')('sk_test_51MD8AXSIiOlaW5i1h6xvi2zT2cBrTXd29jAjtnRMzYjvdGfFx7O22pkkCiUgEWNcEHIIZX1SvFPzEdiqaPApXcyK007GtLW2ar');
+// const stripe = require('stripe')('pk_live_51OJf7NAjeQhOZ3ydBGYvGYbD4gkOIMKrwZLXbYYaLbUAX6Qg1PGPVLfCxYXbQnJTFcnwVIcbhrXgAuxw2u0OFtRW00063vcksU');
 const stripe = require('stripe')('sk_test_51OJf7NAjeQhOZ3ydFrC9Asizb9Qglu1HR0wjaWzxtjtlaDcCb9SElaPMMppBEQjqHEjKbCKt7z2XINgCwNorQHRg00RIt7CWUv');
 
 
