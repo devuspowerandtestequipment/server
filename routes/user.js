@@ -10,8 +10,6 @@ const upload = multer({});
 router.get('/create_demo_admin',UserController.create_demo_admin);
 
 
-
-
 router.get('/',UserController.index);
 router.put('/:id',UserController.update);
 router.get('/fetch_auth_user_admin/:id',UserController.fetch_auth_user_admin);
