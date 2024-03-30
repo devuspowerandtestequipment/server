@@ -308,9 +308,7 @@ const allowOnlyMyDomains = (req, res, next) => {
   // Define an array of allowed domains
   const allowedDomains = [
     'https://www.uspowerandtestequipment.com',
-    'https://uspowerandtestequipment.com',
     'https://www.testequipmentbay.com',
-    'https://testequipmentbay.com',
   ];
 
 
