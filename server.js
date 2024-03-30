@@ -304,26 +304,26 @@ isValidMxEmail('adamqwdqw@qtonix.com')
 
 
 
-const allowOnlyMyDomains = (req, res, next) => {
-  // Define an array of allowed domains
-  const allowedDomains = [
-    'https://www.uspowerandtestequipment.com',
-    'https://www.testequipmentbay.com',
-  ];
+// const allowOnlyMyDomains = (req, res, next) => {
+//   // Define an array of allowed domains
+//   const allowedDomains = [
+//     'https://www.uspowerandtestequipment.com',
+//     'https://www.testequipmentbay.com',
+//   ];
 
 
-  if (req.headers.origin && allowedDomains.includes(req.headers.origin)) {
-    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-  } else {
-    res.status(403).json({ error: 'Forbidden' });
-  }
+//   if (req.headers.origin && allowedDomains.includes(req.headers.origin)) {
+//     res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     next();
+//   } else {
+//     res.status(403).json({ error: 'Forbidden' });
+//   }
 
-};
+// };
 
-app.use('/api', allowOnlyMyDomains);
+// app.use('/api', allowOnlyMyDomains);
 
 
 
